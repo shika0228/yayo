@@ -387,7 +387,43 @@ body {
     margin: 0;
     animation: float 2.4s ease-in-out infinite
 }
-
+@media only screen and (max-width:1024px) {
+  /*----------main-visual--------------*/
+.link-button{top:5%;}
+.nav-wrap{
+    height:60%;
+}
+.nav ul li img{
+    width:80%;
+}
+.main-visual {
+    width: 100%;
+    height:fit-content;
+    align-items:flex-start;
+    
+}
+.main-visual-wrap{
+    margin-top:2%;
+}
+#main-visual-wrap-1 {
+    width:22%;
+    min-width:150px;
+    height:30vh;
+    margin-right: 2%;
+    margin-left:2%;
+}
+.nav ul li a h3 {
+    font-size:0.6cqw;
+}
+#main-visual-wrap-2 {
+    margin-right: 2%;
+    width:66%;
+    min-width:500px;
+}
+.footer-right-box>img{
+    height:80%;
+}
+}
 @media only screen and (max-width:450px) {
 
     /*----------link-button--------------*/
