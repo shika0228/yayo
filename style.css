@@ -938,6 +938,7 @@ letter-spacing: 1.76px;
 
 .main-copy {
     width:45%;
+    height:fit-content;
     margin-left: -2%;
 }
 .about{height:60vh;}
