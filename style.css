@@ -638,7 +638,7 @@ body {
     width: 340px;
     height: 180px;
     margin-left: 5%;
-    margin-bottom: 10%;
+    margin-bottom:130px;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -938,8 +938,8 @@ letter-spacing: 1.76px;
 
 .main-copy {
     width:45%;
-    height:fit-content;
-    margin-left: -2%;
+    height: fit-content;
+    margin-left:-2%;
 }
 .about{height:60vh;}
 .version{
