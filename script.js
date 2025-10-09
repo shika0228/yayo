@@ -1,19 +1,9 @@
-/* =========================================================
-   script.js (完整替换版)
-   - Loading：进度数字 + 上下帘幕 + 柔和淡出
-   - Main Visual：并行启动的弹性进场，避免卡顿
-   - ABOUT：弹性进场
-   - Carousel：中心放大 + 自动轮播 + 按钮 + 拖动/甩动切换
-   - Top Button：在 #illust 中出现并在底部预留空间
-   - Illust：标题与图片“水汽感”淡入（blur→清晰 + 轻柔上浮）
-   ========================================================= */
-
 /* ---------- 主视觉动画（淡出时并行启动） ---------- */
 function playMainVisual() {
   if (!(window.gsap)) return;
 
   gsap.set("#main-visual-wrap-1", { x: "-100vw", opacity: 0 });
-  gsap.set("#main-visual-wrap-2", { x: "100vw",  opacity: 0 });
+  gsap.set("#main-visual-wrap-2", { x: "100vw", opacity: 0 });
 
   const tl = gsap.timeline({ delay: 0.2 });
   tl.to("#main-visual-wrap-1", {
@@ -49,10 +39,7 @@ function initCostumeCarousel() {
   const items = Array.from(root.querySelectorAll('.carousel-wrap'));
   if (!items.length) return;
 
-  // 禁用图片原生拖拽，避免被浏览器拖走
   items.forEach(el => el.querySelector('img')?.setAttribute('draggable', 'false'));
-
-  // 触屏/鼠标体验优化
   root.style.touchAction = 'pan-y';
   root.style.userSelect = 'none';
   root.style.webkitUserSelect = 'none';
@@ -65,18 +52,18 @@ function initCostumeCarousel() {
     if (btn) { btn.style.zIndex = '9999'; btn.style.pointerEvents = 'auto'; }
   });
 
-  // 状态
+
   const N = items.length;
-  let index = 0;      // 当前中心项
-  let dragX = 0;      // 拖拽临时偏移
+  let index = 0;
+  let dragX = 0;
   let isDown = false, startX = 0, lastX = 0, lastT = 0, velocity = 0, movedPx = 0;
 
-  // 布局参数
+
   const getStepX = () => Math.min(420, Math.max(180, root.clientWidth * 0.22));
   const maxShow = 4;
   const blurUnit = 0.4;
   const rotUnit = -2.5;
-  const scaleLevels   = { 0: 1.3, 1: 0.9, 2: 0.8, 3: 0.7, 4: 0.7 };
+  const scaleLevels = { 0: 1.3, 1: 0.9, 2: 0.8, 3: 0.7, 4: 0.7 };
   const opacityLevels = { 0: 1.0, 1: 0.30, 2: 0.15, 3: 0.05, 4: 0.00 };
 
   const rel = (i, cur) => {
@@ -89,7 +76,7 @@ function initCostumeCarousel() {
   function layout(cur, animate = true) {
     const stepX = getStepX();
     items.forEach((el, i) => {
-      const r  = rel(i, cur);
+      const r = rel(i, cur);
       const ar = Math.abs(r);
 
       if (ar > maxShow) {
@@ -101,19 +88,19 @@ function initCostumeCarousel() {
         return;
       }
 
-      const x    = r * stepX + dragX;
-      const sc   = scaleLevels[ar];
-      const op   = opacityLevels[ar];
+      const x = r * stepX + dragX;
+      const sc = scaleLevels[ar];
+      const op = opacityLevels[ar];
       const blur = ar * blurUnit;
-      const z    = 100 - ar;
+      const z = 100 - ar;
       const rotY = r * rotUnit;
 
       el.style.zIndex = `${z}`;
       el.style.opacity = `${op}`;
-      el.style.filter  = `blur(${blur}px)`;
+      el.style.filter = `blur(${blur}px)`;
       el.style.transition = animate ? 'transform .6s ease, opacity .6s ease, filter .6s ease' : 'none';
-      el.style.transform  = `translate(-50%, -50%) translateX(${x}px) rotateY(${rotY}deg) scale(${sc})`;
-      el.style.pointerEvents = ar === 0 ? 'auto' : 'none'; // 防误触
+      el.style.transform = `translate(-50%, -50%) translateX(${x}px) rotateY(${rotY}deg) scale(${sc})`;
+      el.style.pointerEvents = ar === 0 ? 'auto' : 'none';
     });
   }
 
@@ -122,11 +109,11 @@ function initCostumeCarousel() {
     layout(index, true);
   }
 
-  // 自动轮播（悬停/拖拽暂停）
+
   const AUTOPLAY_MS = 2300;
   let timer = null;
   function start() { if (!timer) timer = setInterval(() => go(+1), AUTOPLAY_MS); }
-  function stop()  { if (timer) { clearInterval(timer); timer = null; } }
+  function stop() { if (timer) { clearInterval(timer); timer = null; } }
 
   root.addEventListener('mouseenter', stop);
   root.addEventListener('mouseleave', start);
@@ -141,9 +128,8 @@ function initCostumeCarousel() {
     if (window.gsap) gsap.fromTo(nextBtn, { scale: 1 }, { scale: 1.2, duration: 0.2, yoyo: true, repeat: 1 });
   });
 
-  // 拖拽/甩动
   function onPointerDown(e) {
-    if (e.target.closest('.carousel-btn')) return; // 点到按钮不拖拽
+    if (e.target.closest('.carousel-btn')) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
 
     isDown = true; root.setPointerCapture?.(e.pointerId);
@@ -158,11 +144,11 @@ function initCostumeCarousel() {
     const x = e.clientX, now = performance.now();
     const dx = x - startX;
 
-    // 即时速度（用于甩动）
+
     const instV = (x - lastX) / Math.max(1, (now - lastT));
     velocity = 0.8 * velocity + 0.2 * instV;
 
-    // 过拖软限幅
+
     const stepX = getStepX();
     const soft = Math.abs(dx) > stepX * 1.2
       ? (stepX * 1.2 * Math.sign(dx) + (dx - stepX * 1.2) * 0.4)
@@ -181,15 +167,14 @@ function initCostumeCarousel() {
 
     const stepX = getStepX();
     const delta = dragX / stepX;
-    let flickSteps = velocity * 150 / stepX;  // 甩动增量
+    let flickSteps = velocity * 150 / stepX;
     let advance = Math.round(delta + flickSteps);
-    advance = Math.max(-2, Math.min(2, advance)); // 最多跨两张
+    advance = Math.max(-2, Math.min(2, advance));
 
     if (Math.abs(advance) >= 1) index = (index - advance + N) % N;
 
     dragX = 0; layout(index, true);
 
-    // 防止拖动后误触点击
     if (movedPx > 5) {
       const swallowOnce = (ev) => {
         if (ev.target.closest('.carousel-btn')) return;
@@ -211,7 +196,6 @@ function initCostumeCarousel() {
   start();
   window.addEventListener('resize', () => layout(index, false));
 
-  // 可选：对外 API
   root._carouselAPI = { go, stop, start, getIndex: () => index };
 }
 
@@ -226,7 +210,7 @@ function initLoading() {
   let progress = 0;
 
   const timer = setInterval(() => {
-    progress += Math.random() * 20; // 模拟进度
+    progress += Math.random() * 20;
     if (progress > 100) progress = 100;
     if (fill) fill.style.width = progress + "%";
     if (text) text.textContent = Math.floor(progress) + "%";
@@ -234,22 +218,18 @@ function initLoading() {
     if (progress >= 100) {
       clearInterval(timer);
 
-      // 第一步：上下帘幕开合
       setTimeout(() => {
         screen.classList.add("loaded");
 
-        // 第二步：帘幕完全开合后淡出
         setTimeout(() => {
           screen.classList.add("fade-out");
 
-          // 关键：淡出开始 100ms 后启动主视觉
           setTimeout(() => { playMainVisual(); }, 100);
 
-          // 第三步：完全淡出后移除节点
           setTimeout(() => { screen.remove(); }, 700);
 
-        }, 1100); // 与 .curtain 的 1.1s 对齐
-      }, 250);    // 100% 停留片刻更自然
+        }, 1100);
+      }, 250);
     }
   }, 120);
 }
@@ -262,7 +242,7 @@ function initTopBtn() {
 
   gsap.set(topBtn, { bottom: 0, autoAlpha: 0 });
 
-  // 在 #illust 的中心进/出时显示/隐藏
+
   ScrollTrigger.create({
     trigger: '#illust',
     start: 'center center',
@@ -277,9 +257,8 @@ function initTopBtn() {
     }
   });
 
-  // 最后 400px 预留位
-  function updateTopBtn(){
-    if(!topBtn.classList.contains('active')) return;
+  function updateTopBtn() {
+    if (!topBtn.classList.contains('active')) return;
 
     const doc = document.documentElement;
     const body = document.body;
@@ -289,7 +268,7 @@ function initTopBtn() {
     const distanceFromBottom = Math.max(0, docH - viewportH - scrollY);
 
     let bottomPx = 0;
-    if(distanceFromBottom <= 400){
+    if (distanceFromBottom <= 400) {
       bottomPx = 400 - distanceFromBottom;
     } else {
       bottomPx = 0;
@@ -300,9 +279,9 @@ function initTopBtn() {
   }
 
   let ticking = false;
-  function onScroll(){
-    if(!ticking){
-      requestAnimationFrame(()=>{ updateTopBtn(); ticking = false; });
+  function onScroll() {
+    if (!ticking) {
+      requestAnimationFrame(() => { updateTopBtn(); ticking = false; });
       ticking = true;
     }
   }
@@ -317,7 +296,6 @@ function initTopBtn() {
 function initIllustVaporEnter() {
   if (!(window.gsap && window.ScrollTrigger)) return;
 
-  // 标题：先“雾散”
   gsap.fromTo(".illust-title",
     { y: 30, opacity: 0, filter: "blur(6px)" },
     {
@@ -331,7 +309,6 @@ function initIllustVaporEnter() {
     }
   );
 
-  // 图片：随后随机次序的“雾中浮现”
   gsap.fromTo(".gallery li",
     { y: 28, opacity: 0, filter: "blur(10px)" },
     {
@@ -343,7 +320,6 @@ function initIllustVaporEnter() {
         start: "top 78%",
         once: true
       },
-      // 出场完成后，给一个极轻的呼吸（更“湿润”）
       onComplete: () => {
         gsap.utils.toArray(".gallery li").forEach((li, i) => {
           gsap.to(li, {
@@ -352,7 +328,7 @@ function initIllustVaporEnter() {
             ease: "sine.inOut",
             yoyo: true,
             repeat: -1,
-            delay: (i % 7) * 0.15, // 些许错位
+            delay: (i % 7) * 0.15,
           });
         });
       }
@@ -362,13 +338,12 @@ function initIllustVaporEnter() {
 
 /* ---------- DOM Ready：初始化一切 ---------- */
 document.addEventListener("DOMContentLoaded", () => {
-  // 轮播（不依赖加载页）
+
   initCostumeCarousel();
 
-  // Loading（结束后并行启动主视觉）
+
   initLoading();
 
-  // 其它区块动画
   initAboutEnter();
   initTopBtn();
   initIllustVaporEnter();
